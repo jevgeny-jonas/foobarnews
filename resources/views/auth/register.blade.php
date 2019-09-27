@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+  @push('scripts')
+    <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js') }}"></script>
+    {!! $jsValidator->selector('form') !!}
+  @endpush
+
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8">
