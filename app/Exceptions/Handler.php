@@ -34,6 +34,10 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        //only exceptions that indicate bugs in code are being logged to error log
+        if ($exception instanceof CheckedException) {
+            return;
+        }
         parent::report($exception);
     }
 

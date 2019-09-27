@@ -9,7 +9,9 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "laravel/ui": "^1.0",
-        "proengsoft/laravel-jsvalidation": "^2.5"
+        "proengsoft/laravel-jsvalidation": "^2.5",
+        "psr/simple-cache": "^1.0.1",
+        "simplepie/simplepie": "^1.5.2"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

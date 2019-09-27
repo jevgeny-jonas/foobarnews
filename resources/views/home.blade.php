@@ -14,10 +14,17 @@
               </div>
             @endif
   
-            You are logged in!
+            <div id="news-feed"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 @endsection
+
+@push('scripts')
+  <script src="{{ asset('js/load_news.js') }}"></script>
+  <script>
+    $(document).ready(loadNews);
+  </script>
+@endpush
