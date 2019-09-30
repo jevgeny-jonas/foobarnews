@@ -11,10 +11,24 @@ class NewsProvider implements NewsProviderInterface
     protected $url = 'https://www.theregister.co.uk/software/headlines.atom';
     protected $cacheTimeoutSec = 600;
     protected $cache;
+    protected $filter;
+    protected $maxCount;
     
-    public function __construct(CacheInterface $cache)
+    //50 most common words from https://en.wikipedia.org/wiki/Most_common_words_in_English
+    protected $defaultFilter = ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I',
+        'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his',
+        'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all',
+        'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me'];
+    
+    public function __construct(CacheInterface $cache, int $maxCount = 10, $filter = 'default')
     {
         $this->cache = $cache;
+        $this->maxCount = $maxCount;
+        
+        if ($filter === 'default') {
+            $filter = $this->defaultFilter;
+        }
+        $this->filter = array_map('strtolower', $filter);
     }
     
     protected function getCacheKey(): string
@@ -36,6 +50,7 @@ class NewsProvider implements NewsProviderInterface
         
         $feedStr = $this->fetch();
         $feedArr = $this->parse($feedStr);
+        $feedArr['word_stats'] = $this->getWordStats($feedArr['items']);
         
         $this->cache->set($this->getCacheKey(), $feedArr, $this->cacheTimeoutSec);
         
@@ -111,5 +126,23 @@ class NewsProvider implements NewsProviderInterface
             ];
         }
         return $res;
+    }
+    
+    private function getWordStats(array $items): array
+    {
+        $text = '';
+        
+        foreach ($items as $item) {
+            foreach (['title', 'description'] as $key) {
+                $text .= strtolower(strip_tags(html_entity_decode($item[$key], ENT_HTML5 | ENT_QUOTES))) . ' ';
+            }
+        }
+
+        $stats = array_count_values(array_diff(str_word_count($text, 1), $this->filter));
+
+        asort($stats);
+        array_splice($stats, 0, -$this->maxCount);
+
+        return $stats;
     }
 }
