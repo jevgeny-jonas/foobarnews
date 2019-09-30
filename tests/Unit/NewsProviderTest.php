@@ -34,17 +34,29 @@ class NewsProviderTest extends TestCase
                 'filter' => [],
                 'expected' => ['test' => 2, 'def' => 3],
             ],
-            'tags_and_comments' => [
+            'part_of_word_enclosed_in_tags' => [
                 'items' => [
                     [
-                        'title' => '<h2>test</h2>',
-                        'description' => '<p>def</p> <div>d<i>e</i>f</div> <!-- comment def -->',
+                        'title' => 'def',
+                        'description' => 'def <div>d<i>e</i>f</div>',
                         'permalink' => 'https://www.abc.com/',
                     ],
                 ],
-                'max_count' => 1,
+                'max_count' => 100,
                 'filter' => [],
-                'expected' => ['def' => 2],
+                'expected' => ['def' => 3],
+            ],
+            'comments' => [
+                'items' => [
+                    [
+                        'title' => '<h2>test</h2>',
+                        'description' => ' <!-- comment def -->',
+                        'permalink' => 'https://www.abc.com/',
+                    ],
+                ],
+                'max_count' => 100,
+                'filter' => [],
+                'expected' => ['test' => 1],
             ],
             'multiple_items' => [
                 'items' => [
